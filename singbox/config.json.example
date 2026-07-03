@@ -1,0 +1,37 @@
+{
+  "log": {
+    "level": "info",
+    "output": "/var/log/sing-box.log",
+    "timestamp": true
+  },
+  "inbounds": [
+    {
+      "type": "vless",
+      "tag": "vless-in",
+      "listen": "::",
+      "listen_port": 4443,
+      "users": [
+        { "uuid": "EXAMPLE-UUID-HERE", "flow": "" }
+      ],
+      "tls": {
+        "enabled": true,
+        "certificate_path": "/etc/sing-box/certs/server.crt",
+        "key_path": "/etc/sing-box/certs/server.key",
+        "server_name": "m.zoom.us"
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/zen",
+        "headers": { "Host": "m.zoom.us" }
+      }
+    }
+  ],
+  "outbounds": [
+    { "type": "direct", "tag": "direct" },
+    { "type": "block", "tag": "block" }
+  ],
+  "route": {
+    "rules": [{ "geoip": ["private"], "outbound": "block" }],
+    "final": "direct"
+  }
+}
