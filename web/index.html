@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenVPN — Fast Private VPN in Sri Lanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #060910;
+    --surface:  #0b0f18;
+    --border:   #161d2e;
+    --accent:   #00e5ff;
+    --accent2:  #7b61ff;
+    --green:    #00e676;
+    --text:     #dde6f0;
+    --muted:    #4a5a72;
+    --card:     #0d1320;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── Noise texture overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: #06091088;
+    border-bottom: 1px solid #161d2e44;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    background: var(--accent);
+    color: #000 !important;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+  }
+
+  .nav-cta:hover { background: #33eaff !important; transform: translateY(-1px); }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #00e5ff08 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-glow2 {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #7b61ff06 0%, transparent 70%);
+    top: 30%; right: -10%;
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: #00e5ff10;
+    border: 1px solid #00e5ff25;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  .hero h1 {
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -3px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 .highlight {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 64px;
+  }
+
+  .btn-hero {
+    padding: 16px 36px;
+    border-radius: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-hero-primary {
+    background: var(--accent);
+    color: #000;
+  }
+
+  .btn-hero-primary:hover { background: #33eaff; transform: translateY(-2px); box-shadow: 0 8px 32px #00e5ff30; }
+
+  .btn-hero-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-hero-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat { text-align: center; }
+
+  .hero-stat .value {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-stat .label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* ── Section ── */
+  section {
+    padding: 100px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .section-title {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* ── Features ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 64px;
+  }
+
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature-card:hover { border-color: #00e5ff30; transform: translateY(-4px); }
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    font-size: 36px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .feature-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── Pricing ── */
+  #pricing { background: var(--surface); }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-top: 64px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .pricing-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .pricing-card.popular {
+    border-color: var(--accent);
+    box-shadow: 0 0 60px #00e5ff10;
+  }
+
+  .pricing-card:hover { transform: translateY(-4px); }
+
+  .popular-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .plan-name {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .plan-price {
+    font-family: 'Space Mono', monospace;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .plan-price span {
+    font-size: 18px;
+    color: var(--muted);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .plan-period {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+
+  .plan-features {
+    list-style: none;
+    margin-bottom: 36px;
+  }
+
+  .plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .plan-features li:last-child { border-bottom: none; }
+
+  .plan-features li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .btn-plan {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+  }
+
+  .btn-plan-primary { background: var(--accent); color: #000; }
+  .btn-plan-primary:hover { background: #33eaff; transform: translateY(-1px); }
+
+  .btn-plan-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-plan-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── How it works ── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 64px;
+    position: relative;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    left: 16%;
+    right: 16%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent);
+  }
+
+  .step { text-align: center; }
+
+  .step-num {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 auto 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step h3 { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+  .step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ── Download ── */
+  #download { background: var(--surface); }
+
+  .download-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .download-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .download-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .download-card .icon { font-size: 40px; margin-bottom: 16px; display: block; }
+  .download-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .download-card p { font-size: 13px; color: var(--muted); }
+
+  /* ── FAQ ── */
+  .faq-list { margin-top: 48px; max-width: 720px; }
+
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .faq-question {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 24px 0;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .faq-question:hover { color: var(--accent); }
+  .faq-chevron { transition: transform 0.3s; color: var(--muted); flex-shrink: 0; }
+  .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+  .faq-answer {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s;
+  }
+
+  .faq-item.open .faq-answer { max-height: 200px; padding-bottom: 20px; }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center;
+    padding: 120px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #00e5ff08 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+
+  .cta-section p {
+    font-size: 17px;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+
+  /* ── Contact ── */
+  .contact-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 48px;
+  }
+
+  .contact-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .contact-card:hover { border-color: var(--accent); color: var(--accent); }
+  .contact-card .icon { font-size: 22px; }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  footer p { font-size: 13px; color: var(--muted); }
+
+  /* ── Scroll animation ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .features-grid, .steps, .download-grid { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .steps::before { display: none; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav>
+  <a href="#" class="logo">Zen<span>VPN</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#pricing" class="nav-cta">Get Started</a></li>
+  </ul>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div style="position:relative;z-index:1">
+    <div class="hero-badge">🇱🇰 Made for Sri Lanka</div>
+    <h1>
+      Fast. Private.<br>
+      <span class="highlight">Unrestricted.</span>
+    </h1>
+    <p>ZenVPN gives you blazing fast speeds, complete privacy, and access to everything — starting at just Rs. 200/month.</p>
+    <div class="hero-btns">
+      <a href="#pricing" class="btn-hero btn-hero-primary">Get Started →</a>
+      <a href="#how" class="btn-hero btn-hero-ghost">How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="value">100<small style="font-size:18px">Mbps</small></span>
+        <span class="label">Max Speed</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value">5</span>
+        <span class="label">Protocols</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value">Rs.200</span>
+        <span class="label">Starting Price</span>
+      </div>
+      <div class="hero-stat">
+        <span class="value">24/7</span>
+        <span class="label">Support</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section id="features">
+  <div class="container">
+    <span class="section-tag">Why ZenVPN</span>
+    <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+    <p class="section-sub">Built specifically for Sri Lankan users who want speed, privacy, and reliability without the price tag.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-icon">⚡</span>
+        <h3>Blazing Fast Speeds</h3>
+        <p>Up to 100 Mbps on Pro plan. Stream, game, and browse without buffering or lag.</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🔒</span>
+        <h3>Military Grade Encryption</h3>
+        <p>VLESS, Trojan, and Hysteria2 protocols with TLS encryption keep your data safe.</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🎮</span>
+        <h3>Gaming Optimized</h3>
+        <p>Low latency connections perfect for online gaming. Reduce ping and eliminate lag spikes.</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">📱</span>
+        <h3>All Devices</h3>
+        <p>Works on Windows, Android, and iOS. Connect up to 5 devices on the Pro plan.</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🎬</span>
+        <h3>Stream Everything</h3>
+        <p>Access Netflix, YouTube, and social media at full speed without restrictions.</p>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🛡️</span>
+        <h3>No Logs Policy</h3>
+        <p>We don't track or store your browsing activity. Your privacy is our priority.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ── -->
+<section id="pricing">
+  <div class="container" style="text-align:center">
+    <span class="section-tag">Pricing</span>
+    <h2 class="section-title">Simple, affordable plans</h2>
+    <p class="section-sub" style="margin:0 auto">No hidden fees. No contracts. Cancel anytime.</p>
+    <div class="pricing-grid">
+
+      <div class="pricing-card reveal">
+        <div class="plan-name">Basic</div>
+        <div class="plan-price">200 <span>LKR</span></div>
+        <div class="plan-period">per month</div>
+        <ul class="plan-features">
+          <li>50 Mbps speed</li>
+          <li>2 devices</li>
+          <li>All protocols</li>
+          <li>WhatsApp support</li>
+          <li>30 day validity</li>
+        </ul>
+        <a href="#contact" class="btn-plan btn-plan-ghost">Get Basic</a>
+      </div>
+
+      <div class="pricing-card popular reveal">
+        <div class="popular-badge">Most Popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">500 <span>LKR</span></div>
+        <div class="plan-period">per month</div>
+        <ul class="plan-features">
+          <li>100 Mbps speed</li>
+          <li>5 devices</li>
+          <li>All protocols</li>
+          <li>Priority support</li>
+          <li>30 day validity</li>
+        </ul>
+        <a href="#contact" class="btn-plan btn-plan-primary">Get Pro</a>
+      </div>
+
+    </div>
+    <p style="margin-top:24px;font-size:13px;color:var(--muted)">
+      💬 Contact us on WhatsApp to get started instantly
+    </p>
+  </div>
+</section>
+
+<!-- ── How It Works ── -->
+<section id="how">
+  <div class="container">
+    <span class="section-tag">Setup</span>
+    <h2 class="section-title">Up and running<br>in 2 minutes</h2>
+    <p class="section-sub">No technical knowledge needed. Just follow these simple steps.</p>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h3>Choose Your Plan</h3>
+        <p>Pick Basic or Pro depending on your needs. Contact us on WhatsApp to purchase.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">02</div>
+        <h3>Get Your Config</h3>
+        <p>We send you a connection link instantly after payment. Works like a QR code.</p>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">03</div>
+        <h3>Connect & Browse</h3>
+        <p>Download Hiddify, paste your link, and connect. That's it — you're protected.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Download ── -->
+<section id="download">
+  <div class="container">
+    <span class="section-tag">Client Apps</span>
+    <h2 class="section-title">Works on every device</h2>
+    <p class="section-sub">Download the free Hiddify app to use your ZenVPN connection.</p>
+    <div class="download-grid">
+      <div class="download-card reveal" onclick="window.open('https://hiddify.com','_blank')">
+        <span class="icon">🪟</span>
+        <h3>Windows</h3>
+        <p>Hiddify for Windows</p>
+      </div>
+      <div class="download-card reveal" onclick="window.open('https://play.google.com/store/apps/details?id=app.hiddify.com','_blank')">
+        <span class="icon">🤖</span>
+        <h3>Android</h3>
+        <p>Hiddify on Play Store</p>
+      </div>
+      <div class="download-card reveal" onclick="window.open('https://apps.apple.com/app/streisand/id6450534064','_blank')">
+        <span class="icon">🍎</span>
+        <h3>iOS</h3>
+        <p>Streisand on App Store</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="container">
+    <span class="section-tag">FAQ</span>
+    <h2 class="section-title">Common questions</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How do I pay for ZenVPN?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">
+          Currently we accept payments via WhatsApp. Contact us, tell us your plan, and we'll send you payment details. Your account is activated within minutes of payment.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How many devices can I use?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">
+          Basic plan supports 2 devices and Pro plan supports 5 devices simultaneously. Each device gets its own connection config.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Will it work for gaming?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">
+          Yes! ZenVPN is optimized for gaming. The Hysteria2 protocol is specifically designed for low latency. Many of our users use it for PUBG, Free Fire, and other online games.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Can I stream Netflix and YouTube?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">
+          Yes. ZenVPN gives you fast enough speeds to stream in HD and 4K without buffering. Both Basic and Pro plans support streaming.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What happens when my subscription expires?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">
+          Your account is automatically disabled when it expires. Simply renew by contacting us on WhatsApp and your access is restored instantly.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Is my data private?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">
+          Yes. We do not log or store your browsing activity. All traffic is encrypted with TLS. Your online activity is completely private.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div style="position:relative;z-index:1">
+    <h2>Ready to get started?</h2>
+    <p>Join ZenVPN today and browse freely.</p>
+    <a href="#contact" class="btn-hero btn-hero-primary" style="display:inline-flex">
+      Contact Us on WhatsApp →
+    </a>
+  </div>
+</section>
+
+<!-- ── Contact ── -->
+<section id="contact" style="padding:60px 24px;background:var(--surface)">
+  <div class="container" style="text-align:center">
+    <span class="section-tag">Contact</span>
+    <h2 class="section-title">Get in touch</h2>
+    <p class="section-sub" style="margin:0 auto 16px">Message us to purchase a plan or get help. We reply fast!</p>
+    <div class="contact-row">
+      <a href="https://wa.me/+94728292151" class="contact-card" target="_blank">
+        <span class="icon">💬</span>
+        WhatsApp Us
+      </a>
+      <a href="mailto:sudilanethmal76@gmail.com" class="contact-card">
+        <span class="icon">✉️</span>
+        Email Us
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <a href="#" class="logo" style="font-size:18px">Zen<span>VPN</span></a>
+  <p>© 2026 ZenVPN. Fast private VPN for Sri Lanka.</p>
+  <p style="font-size:12px">Server: Oracle Cloud • Protocols: VLESS, Trojan, VMess, SS, Hysteria2</p>
+</footer>
+
+<script>
+  // FAQ toggle
+  function toggleFaq(btn) {
+    const item = btn.parentElement;
+    item.classList.toggle('open');
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
