@@ -103,7 +103,7 @@ def parse_connections():
     connections = defaultdict(set)
 
     try:
-        with open(SINGBOX_LOG, "r") as f:
+        with open(SINGBOX_LOG, "r", encoding="utf-8", errors="replace") as f:
             lines = f.readlines()
     except FileNotFoundError:
         log.warning(f"Log file not found: {SINGBOX_LOG}")
