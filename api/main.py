@@ -33,6 +33,7 @@ DATABASE_URL    = "sqlite:////etc/zenvpn/api/zenvpn.db"
 USER_DB         = "/etc/sing-box/users.json"
 SINGBOX_CONFIG  = "/etc/sing-box/config.json"
 SERVER_IP       = "129.150.32.96"
+SERVER_DOMAIN   = "zenvpnsl.duckdns.org"
 SNI             = "m.zoom.us"
 CLASH_API       = "http://127.0.0.1:9090"
 TRAFFIC_STATS   = "/var/lib/zenvpn/traffic_stats.json"
@@ -186,7 +187,7 @@ def generate_uris(username: str, vless_uuid: str, trojan_uuid: str, vmess_uuid: 
     use_sni = sni if sni is not None else SNI
     vmess_json = json.dumps({
         "v": "2", "ps": f"ZenVPN-{username}",
-        "add": SERVER_IP, "port": "80",
+        "add": SERVER_DOMAIN, "port": "80",
         "id": vmess_uuid, "aid": "0",
         "net": "ws", "type": "none",
         "host": use_sni, "path": "/vmess", "tls": "none"
@@ -201,11 +202,11 @@ def generate_uris(username: str, vless_uuid: str, trojan_uuid: str, vmess_uuid: 
     ss_userinfo = base64.b64encode(f"aes-256-gcm:{ss_password}".encode()).decode()
 
     return {
-        "vless":     f"vless://{vless_uuid}@{SERVER_IP}:4443?encryption=none&security=tls&sni={use_sni}&type=ws&host={use_sni}&path=%2Fzen&allowInsecure=1#ZenVPN-{username}",
-        "trojan":    f"trojan://{trojan_uuid}@{SERVER_IP}:8443?security=tls&sni={use_sni}&type=ws&host={use_sni}&path=%2Ftrojan&allowInsecure=1#ZenVPN-Trojan-{username}",
+        "vless":     f"vless://{vless_uuid}@{SERVER_DOMAIN}:4443?encryption=none&security=tls&sni={use_sni}&type=ws&host={use_sni}&path=%2Fzen&allowInsecure=1#ZenVPN-{username}",
+        "trojan":    f"trojan://{trojan_uuid}@{SERVER_DOMAIN}:8443?security=tls&sni={use_sni}&type=ws&host={use_sni}&path=%2Ftrojan&allowInsecure=1#ZenVPN-Trojan-{username}",
         "vmess":     f"vmess://{vmess_b64}",
-        "ss":        f"ss://{ss_userinfo}@{SERVER_IP}:8388#ZenVPN-SS-{username}",
-        "hysteria2": f"hysteria2://{vless_uuid}@{SERVER_IP}:5443?insecure=1&sni={use_sni}#ZenVPN-Hysteria2-{username}"
+        "ss":        f"ss://{ss_userinfo}@{SERVER_DOMAIN}:8388#ZenVPN-SS-{username}",
+        "hysteria2": f"hysteria2://{vless_uuid}@{SERVER_DOMAIN}:5443?insecure=1&sni={use_sni}#ZenVPN-Hysteria2-{username}"
     }
 
 # =============================================================================
