@@ -435,6 +435,234 @@
     margin-top: 24px;
   }
 
+  /* ── User Detail Panel ── */
+  #user-detail-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000000bb;
+    z-index: 300;
+    align-items: flex-start;
+    justify-content: flex-end;
+    backdrop-filter: blur(6px);
+  }
+
+  #user-detail-overlay.open { display: flex; }
+
+  #user-detail-panel {
+    width: 100%;
+    max-width: 680px;
+    height: 100vh;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    box-shadow: -24px 0 80px #000000aa;
+    animation: slideIn 0.25s ease;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
+  }
+
+  .detail-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 10;
+  }
+
+  .detail-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .detail-header h2 span { color: var(--accent); }
+
+  .close-btn {
+    background: var(--border);
+    border: none;
+    color: var(--muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .close-btn:hover { background: var(--accent); color: #000; }
+
+  .detail-body { padding: 28px; }
+
+  .detail-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .meta-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+
+  .meta-card label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .meta-card value {
+    font-size: 14px;
+    font-weight: 600;
+    display: block;
+  }
+
+  .device-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .device-card:hover { border-color: #ffffff18; }
+
+  .device-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .device-name {
+    font-weight: 700;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  .dead-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+
+  .device-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .device-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .usage-bar-wrap {
+    margin-bottom: 14px;
+  }
+
+  .usage-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .usage-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .usage-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.5s ease;
+  }
+
+  .uri-collapse {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-top: 4px;
+  }
+
+  .uri-toggle {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .uri-toggle:hover { text-decoration: underline; }
+
+  .uri-list-inner { display: none; }
+  .uri-list-inner.show { display: block; }
+
+  .detail-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .add-device-form {
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 8px;
+    display: none;
+  }
+
+  .add-device-form.show { display: block; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
   /* ── URI Box ── */
   .uri-box {
     background: var(--bg);
@@ -746,6 +974,9 @@
               </tbody>
             </table>
           </div>
+          <div id="user-search-bar" style="padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center">
+            <input type="text" id="user-search" placeholder="🔍  Search users…" oninput="filterUsers()" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none" />
+          </div>
         </div>
       </div>
 
@@ -837,7 +1068,7 @@
 <!-- ── URI Modal ── -->
 <div class="modal-overlay" id="uri-modal">
   <div class="modal" style="max-width:600px">
-    <h2>✅ User Created</h2>
+    <h2 id="uri-modal-title">✅ User Created</h2>
     <p>Share these connection URIs with the user. Click any URI to copy it.</p>
     <div id="uri-list"></div>
     <div class="modal-actions">
@@ -854,6 +1085,93 @@
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Cancel</button>
       <button class="btn btn-danger" id="confirm-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── User Detail Panel ── -->
+<div id="user-detail-overlay" onclick="handleOverlayClick(event)">
+  <div id="user-detail-panel">
+    <div class="detail-header">
+      <h2 id="detail-username">User<span>Name</span></h2>
+      <button class="close-btn" onclick="closeUserDetail()">✕</button>
+    </div>
+    <div class="detail-body">
+
+      <!-- Meta -->
+      <div class="detail-meta">
+        <div class="meta-card">
+          <label>Plan</label>
+          <value id="detail-plan">—</value>
+        </div>
+        <div class="meta-card">
+          <label>Status</label>
+          <value id="detail-status">—</value>
+        </div>
+        <div class="meta-card">
+          <label>Expiry</label>
+          <value id="detail-expiry">—</value>
+        </div>
+        <div class="meta-card" style="grid-column:span 2">
+          <label>Notes</label>
+          <value id="detail-notes" style="font-size:13px;font-weight:400">—</value>
+        </div>
+        <div class="meta-card">
+          <label>Days Left</label>
+          <value id="detail-days">—</value>
+        </div>
+      </div>
+
+      <!-- Total Usage -->
+      <div style="margin-bottom:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-weight:600">Total Traffic Usage</span>
+          <span id="detail-usage-updated" style="font-size:10px;color:var(--muted)"></span>
+        </div>
+        <div style="display:flex;gap:24px">
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:22px;color:var(--accent)" id="detail-total-mb">—</div>
+            <div style="font-size:11px;color:var(--muted)">Total MB Used</div>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:22px;color:var(--accent2)" id="detail-upload-mb">—</div>
+            <div style="font-size:11px;color:var(--muted)">↑ Upload MB</div>
+          </div>
+          <div>
+            <div style="font-family:'Space Mono',monospace;font-size:22px;color:var(--green)" id="detail-download-mb">—</div>
+            <div style="font-size:11px;color:var(--muted)">↓ Download MB</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Devices -->
+      <div class="detail-section-title">
+        <span>Devices</span>
+        <button class="btn btn-success" style="font-size:12px;padding:6px 12px" onclick="toggleAddDeviceForm()">+ Add Device</button>
+      </div>
+
+      <!-- Add Device Form -->
+      <div class="add-device-form" id="add-device-form">
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:0">
+            <label>Device Name <span style="color:var(--muted)">(optional)</span></label>
+            <input type="text" id="new-device-name" placeholder="e.g. iPhone 15" />
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Custom SNI <span style="color:var(--muted)">(optional)</span></label>
+            <input type="text" id="new-device-sni" placeholder="e.g. m.zoom.us" />
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary" style="flex:1" onclick="addDevice()" id="add-device-btn">Generate Device URIs</button>
+          <button class="btn btn-ghost" onclick="toggleAddDeviceForm()">Cancel</button>
+        </div>
+      </div>
+
+      <div id="devices-list" style="margin-top:16px">
+        <div class="empty-state"><div class="icon">📱</div><p>Loading devices…</p></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -964,16 +1282,20 @@
     }
   }
 
-  function renderUsersTable() {
+  function renderUsersTable(users) {
     const tbody = document.getElementById('users-table');
-    if (!allUsers.length) {
+    const list = users || allUsers;
+    if (!list.length) {
       tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">👥</div><p>No users yet. Add your first user!</p></div></td></tr>`;
       return;
     }
-    tbody.innerHTML = allUsers.map((u, i) => `
+    tbody.innerHTML = list.map((u, i) => `
       <tr>
         <td style="color:var(--muted)">${i + 1}</td>
-        <td><strong>${u.username}</strong>${u.notes ? `<br><span style="color:var(--muted);font-size:11px">${u.notes}</span>` : ''}</td>
+        <td>
+          <strong style="cursor:pointer;color:var(--accent);text-decoration:none" onclick="openUserDetail('${u.username}')">${u.username}</strong>
+          ${u.notes ? `<br><span style="color:var(--muted);font-size:11px">${u.notes}</span>` : ''}
+        </td>
         <td><span class="badge badge-${u.plan}">${u.plan}</span></td>
         <td><span class="badge badge-${u.status}">${u.status}</span></td>
         <td style="font-family:'Space Mono',monospace;font-size:12px">${u.bandwidth_mbps === 0 ? '∞' : u.bandwidth_mbps + ' Mbps'}</td>
@@ -983,6 +1305,7 @@
         </td>
         <td>
           <div class="actions">
+            <button class="btn btn-ghost" onclick="openUserDetail('${u.username}')" title="View Details">👁</button>
             <button class="btn btn-success" onclick="renewUser('${u.username}')">↻</button>
             ${u.status === 'active'
               ? `<button class="btn btn-warning" onclick="suspendUser('${u.username}')">⏸</button>`
@@ -992,6 +1315,16 @@
         </td>
       </tr>
     `).join('');
+  }
+
+  function filterUsers() {
+    const q = document.getElementById('user-search').value.toLowerCase();
+    const filtered = q ? allUsers.filter(u =>
+      u.username.toLowerCase().includes(q) ||
+      (u.notes || '').toLowerCase().includes(q) ||
+      u.plan.toLowerCase().includes(q)
+    ) : allUsers;
+    renderUsersTable(filtered);
   }
 
   function renderRecentUsers() {
@@ -1043,15 +1376,19 @@
     const list = document.getElementById('uri-list');
     list.innerHTML = `
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px">
-        <strong>${username}</strong> — <span class="badge badge-${plan}">${plan}</span>
+        <strong>${username}</strong>${plan ? ` — <span class="badge badge-${plan}">${plan}</span>` : ''}
       </div>
-    ` + Object.entries(uris).map(([proto, uri]) => `
-      <div class="uri-label">${proto.toUpperCase()}</div>
-      <div class="uri-box" onclick="copyText('${uri}', this)">
-        ${uri.substring(0, 80)}...
-        <span class="copied-hint">✓ Copied!</span>
-      </div>
-    `).join('');
+    ` + Object.entries(uris).map(([proto, uri]) => {
+      const safeUri = uri.replace(/'/g, "\\'");
+      return `
+        <div class="uri-label">${proto.toUpperCase()}</div>
+        <div class="uri-box" onclick="copyText('${safeUri}', this)">
+          ${uri.substring(0, 80)}…
+          <span class="copied-hint">✓ Copied!</span>
+        </div>
+      `;
+    }).join('');
+    document.getElementById('uri-modal-title').textContent = '✅ User Created';
     document.getElementById('uri-modal').classList.add('open');
   }
 
@@ -1092,7 +1429,233 @@
     try {
       await api('DELETE', `/users/${username}`);
       showToast(`${username} deleted`, 'success');
+      closeUserDetail();
       loadUsers(); loadStats();
+    } catch (e) { showToast(e.message, 'error'); }
+  }
+
+  // ── User Detail Panel ─────────────────────────────────────────────────────
+  let detailUsername = null;
+  let detailUsageData = null;
+
+  async function openUserDetail(username) {
+    detailUsername = username;
+    document.getElementById('add-device-form').classList.remove('show');
+    document.getElementById('new-device-name').value = '';
+    document.getElementById('new-device-sni').value  = '';
+
+    // Populate header
+    const nameParts = username.split('');
+    document.getElementById('detail-username').innerHTML =
+      username.slice(0, -Math.min(3, username.length)) +
+      `<span>${username.slice(-Math.min(3, username.length))}</span>`;
+
+    // Open overlay
+    document.getElementById('user-detail-overlay').classList.add('open');
+
+    // Reset fields
+    ['detail-plan','detail-status','detail-expiry','detail-notes','detail-days'].forEach(id =>
+      document.getElementById(id).textContent = '…');
+    document.getElementById('detail-total-mb').textContent = '…';
+    document.getElementById('detail-upload-mb').textContent = '…';
+    document.getElementById('detail-download-mb').textContent = '…';
+    document.getElementById('devices-list').innerHTML = '<div class="empty-state"><div class="icon">⏳</div><p>Loading…</p></div>';
+
+    try {
+      const [userData, usageData] = await Promise.all([
+        api('GET', `/users/${username}`),
+        api('GET', `/users/${username}/usage`).catch(() => null)
+      ]);
+
+      detailUsageData = usageData;
+
+      // Meta
+      const plan = userData.plan;
+      document.getElementById('detail-plan').innerHTML = `<span class="badge badge-${plan}">${plan}</span>`;
+      document.getElementById('detail-status').innerHTML = `<span class="badge badge-${userData.status}">${userData.status}</span>`;
+      document.getElementById('detail-expiry').textContent = userData.expiry_date
+        ? new Date(userData.expiry_date).toLocaleDateString() : '—';
+      document.getElementById('detail-notes').textContent = userData.notes || '—';
+      const daysLeft = userData.days_left || 0;
+      document.getElementById('detail-days').innerHTML =
+        `<span style="color:${daysLeft < 3 ? 'var(--red)' : 'var(--green)'}">${daysLeft}d</span>`;
+
+      // Usage
+      if (usageData) {
+        document.getElementById('detail-total-mb').textContent    = usageData.total_used_mb.toFixed(2) + ' MB';
+        document.getElementById('detail-upload-mb').textContent   = usageData.total_upload_mb.toFixed(2) + ' MB';
+        document.getElementById('detail-download-mb').textContent = usageData.total_download_mb.toFixed(2) + ' MB';
+        document.getElementById('detail-usage-updated').textContent = 'Updated: ' + (usageData.stats_updated || 'never');
+      } else {
+        document.getElementById('detail-total-mb').textContent = 'N/A';
+        document.getElementById('detail-upload-mb').textContent = 'N/A';
+        document.getElementById('detail-download-mb').textContent = 'N/A';
+      }
+
+      // Devices
+      renderDetailDevices(userData.devices, usageData);
+
+    } catch (e) {
+      showToast('Failed to load user details', 'error');
+      document.getElementById('devices-list').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Failed to load</p></div>';
+    }
+  }
+
+  function renderDetailDevices(devices, usageData) {
+    const container = document.getElementById('devices-list');
+    if (!devices || !devices.length) {
+      container.innerHTML = '<div class="empty-state"><div class="icon">📱</div><p>No devices. Add one above.</p></div>';
+      return;
+    }
+
+    const byDevice = {};
+    if (usageData && usageData.devices) {
+      usageData.devices.forEach(d => { byDevice[d.device] = d; });
+    }
+
+    container.innerHTML = devices.map((dev, idx) => {
+      const usageDev = byDevice[dev.device] || {};
+      const usedMb   = (usageDev.used_mb || 0).toFixed(2);
+      const upMb     = (usageDev.upload_mb || 0).toFixed(2);
+      const downMb   = (usageDev.download_mb || 0).toFixed(2);
+      const isLive   = usageDev.live_active || false;
+      const devId    = dev.vless_uuid || dev.device;
+
+      return `
+        <div class="device-card" id="device-card-${idx}">
+          <div class="device-card-header">
+            <div class="device-name">
+              <div class="${isLive ? 'live-dot' : 'dead-dot'}"></div>
+              📱 ${dev.device}
+            </div>
+            <button class="btn btn-danger" style="padding:5px 10px;font-size:11px"
+              onclick="confirmDeleteDevice('${detailUsername}', '${devId}', '${dev.device}')">Remove</button>
+          </div>
+          <div class="device-meta">
+            <span>🌐 ${dev.last_ip || 'Not seen yet'}</span>
+            <span>⏱ ${dev.last_seen ? new Date(dev.last_seen).toLocaleString() : 'Never'}</span>
+            <span style="color:${dev.status === 'active' ? 'var(--green)' : 'var(--red)'}">
+              ${dev.status || 'active'}
+            </span>
+          </div>
+          <div class="usage-bar-wrap">
+            <div class="usage-label">
+              <span>↑ ${upMb} MB &nbsp; ↓ ${downMb} MB</span>
+              <span>${usedMb} MB used</span>
+            </div>
+            <div class="usage-bar">
+              <div class="usage-fill" style="width:${Math.min(100, (usedMb / 1024) * 100)}%"></div>
+            </div>
+          </div>
+          <div class="uri-collapse">
+            <button class="uri-toggle" onclick="toggleURIs(this)">▶ Show Connection URIs</button>
+            <div class="uri-list-inner">
+              ${buildDeviceURIs(dev)}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function buildDeviceURIs(dev) {
+    const vless  = dev.vless_uuid;
+    const trojan = dev.trojan_uuid;
+    const vmess  = dev.vmess_uuid;
+    if (!vless) return '<p style="color:var(--muted);font-size:12px">No URIs available</p>';
+
+    const SERVER_IP = '129.150.32.96';
+    const sni       = dev.sni || 'm.zoom.us';
+    const vmessObj  = JSON.stringify({
+      v:'2', ps:`ZenVPN-${detailUsername}`,
+      add:SERVER_IP, port:'80',
+      id:vmess, aid:'0',
+      net:'ws', type:'none',
+      host:sni, path:'/vmess', tls:'none'
+    });
+    const vmessB64 = btoa(vmessObj);
+
+    const uris = {
+      VLESS:      `vless://${vless}@${SERVER_IP}:4443?encryption=none&security=tls&sni=${sni}&type=ws&host=${sni}&path=%2Fzen&allowInsecure=1#ZenVPN-${detailUsername}`,
+      Trojan:     `trojan://${trojan}@${SERVER_IP}:8443?security=tls&sni=${sni}&type=ws&host=${sni}&path=%2Ftrojan&allowInsecure=1#ZenVPN-Trojan-${detailUsername}`,
+      VMess:      `vmess://${vmessB64}`,
+      Hysteria2:  `hysteria2://${vless}@${SERVER_IP}:5443?insecure=1&sni=${sni}#ZenVPN-Hysteria2-${detailUsername}`
+    };
+
+    return Object.entries(uris).map(([proto, uri]) => `
+      <div class="uri-label" style="margin-top:8px">${proto}</div>
+      <div class="uri-box" onclick="copyText('${uri.replace(/'/g,"\\'").replace(/"/g,'&quot;')}', this)">
+        ${uri.substring(0, 90)}…
+        <span class="copied-hint">✓ Copied!</span>
+      </div>
+    `).join('');
+  }
+
+  function toggleURIs(btn) {
+    const inner = btn.nextElementSibling;
+    const open  = inner.classList.toggle('show');
+    btn.textContent = (open ? '▼ Hide' : '▶ Show') + ' Connection URIs';
+  }
+
+  function closeUserDetail() {
+    document.getElementById('user-detail-overlay').classList.remove('open');
+    detailUsername = null;
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('user-detail-overlay')) closeUserDetail();
+  }
+
+  function toggleAddDeviceForm() {
+    document.getElementById('add-device-form').classList.toggle('show');
+  }
+
+  async function addDevice() {
+    if (!detailUsername) return;
+    const deviceName = document.getElementById('new-device-name').value.trim() || null;
+    const sni        = document.getElementById('new-device-sni').value.trim() || null;
+    const btn        = document.getElementById('add-device-btn');
+    btn.textContent  = '⟳ Generating…';
+    btn.disabled     = true;
+
+    try {
+      const data = await api('POST', `/users/${detailUsername}/devices`,
+        { device_name: deviceName, sni });
+
+      btn.textContent = 'Generate Device URIs';
+      btn.disabled    = false;
+      document.getElementById('add-device-form').classList.remove('show');
+      document.getElementById('new-device-name').value = '';
+      document.getElementById('new-device-sni').value  = '';
+
+      // Show the URIs in the URI modal
+      document.getElementById('uri-modal-title').textContent = '✅ Device Added';
+      showURIs(data.uris, detailUsername, null);
+
+      // Refresh the detail panel
+      await openUserDetail(detailUsername);
+      showToast('Device added successfully', 'success');
+    } catch (e) {
+      btn.textContent = 'Generate Device URIs';
+      btn.disabled    = false;
+      showToast(e.message, 'error');
+    }
+  }
+
+  function confirmDeleteDevice(username, deviceId, deviceName) {
+    document.getElementById('confirm-title').textContent = `Remove ${deviceName}?`;
+    document.getElementById('confirm-msg').textContent   = `This will immediately disconnect device "${deviceName}" and revoke its credentials.`;
+    document.getElementById('confirm-btn').onclick       = () => deleteDevice(username, deviceId, deviceName);
+    document.getElementById('confirm-modal').classList.add('open');
+  }
+
+  async function deleteDevice(username, deviceId, deviceName) {
+    closeModal('confirm-modal');
+    try {
+      await api('DELETE', `/users/${username}/devices/${deviceId}`);
+      showToast(`Device "${deviceName}" removed`, 'success');
+      await openUserDetail(username);
+      loadUsers();
     } catch (e) { showToast(e.message, 'error'); }
   }
 
