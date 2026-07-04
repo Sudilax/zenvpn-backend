@@ -93,26 +93,46 @@ def rebuild_singbox_config(db):
         json.dump(config, f, indent=2)
 
 # ── Log Parser ────────────────────────────────────────────────────────────────
-def parse_connections():
+def parse_connections(last_offset=None):
     """
-    Parse sing-box log for connection entries.
-    Returns dict: {uuid: set(ip_addresses)}
-    sing-box log format example:
-    2026-05-20T09:00:00Z INFO inbound/vless-in: [::ffff:1.2.3.4]:12345 accepted
+    Parse new sing-box log lines since last_offset for connection entries.
+    Returns tuple: (dict of {uuid: set(ip_addresses)}, new_offset)
     """
     connections = defaultdict(set)
 
     try:
+        p = Path(SINGBOX_LOG)
+        if not p.exists():
+            log.warning(f"Log file not found: {SINGBOX_LOG}")
+            return connections, 0
+
+        current_size = p.stat().st_size
+
+        # Initialize offset on first run or handle log rotation
+        if last_offset is None:
+            last_offset = max(0, current_size - 1024 * 1024)
+            log.info(f"Initial log scan starting at offset {last_offset} (file size: {current_size})")
+        elif current_size < last_offset:
+            log.info("Log file truncated or rotated, resetting offset to 0")
+            last_offset = 0
+
+        if current_size == last_offset:
+            return connections, last_offset
+
         with open(SINGBOX_LOG, "r", encoding="utf-8", errors="replace") as f:
-            lines = f.readlines()
-    except FileNotFoundError:
-        log.warning(f"Log file not found: {SINGBOX_LOG}")
-        return connections
+            f.seek(last_offset)
+            chunk = f.read(current_size - last_offset)
+            new_offset = f.tell()
+
+        lines = chunk.splitlines()
+    except Exception as e:
+        log.error(f"Error reading log file: {e}")
+        return connections, (last_offset or 0)
 
     # Match lines with UUID and IP
-    # sing-box logs user UUID in accepted connection lines
+    # Supports both ISO8601 (with T) and standard timezone logs (with space)
     uuid_pattern = re.compile(
-        r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})'  # timestamp
+        r'(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2})'  # timestamp
         r'.*?'
         r'\[?([0-9a-fA-F:.]+)\]?:\d+'               # IP address
         r'.*?'
@@ -128,7 +148,7 @@ def parse_connections():
             if ip not in ("127.0.0.1", "::1"):
                 connections[uuid].add(ip)
 
-    return connections
+    return connections, new_offset
 
 # ── UUID Lookup ───────────────────────────────────────────────────────────────
 def find_user_by_uuid(db, uuid):
@@ -256,10 +276,12 @@ def main():
     log.info("ZenVPN Device Tracker started")
     log.info(f"Checking every {CHECK_INTERVAL} seconds")
 
+    last_offset = None
+
     while True:
         try:
             db          = load_db()
-            connections = parse_connections()
+            connections, last_offset = parse_connections(last_offset)
 
             db, devices_changed = enforce_device_limits(db, connections)
             db, expiry_changed  = check_expiry(db)

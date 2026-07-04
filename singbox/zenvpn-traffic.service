@@ -1,0 +1,16 @@
+[Unit]
+Description=ZenVPN Traffic Accumulator
+After=network.target sing-box.service
+Requires=sing-box.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/python3 /etc/zenvpn/singbox/traffic_accumulator.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/zenvpn-traffic.log
+StandardError=append:/var/log/zenvpn-traffic.log
+
+[Install]
+WantedBy=multi-user.target
